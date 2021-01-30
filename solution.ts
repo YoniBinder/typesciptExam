@@ -91,3 +91,5 @@ window.onload=()=>{
             location.reload()
         }
     })  
+    
+export{}
