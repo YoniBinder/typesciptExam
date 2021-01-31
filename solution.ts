@@ -1,3 +1,5 @@
+"use strict";
+{
 
     console.log("STARTING PROJECT")
     let arr:Array<Task> = []
@@ -7,8 +9,7 @@
     let todo:HTMLElement=document.querySelector("#todo-list")
     let delAll:HTMLElement=document.querySelector("#todo-delall")
     let del:HTMLElement=document.querySelector("#todo-delcom")
-
-
+      
     class Task{
         public txt:string
         public id:number
@@ -19,52 +20,49 @@
             this.txt=txt
             this.isDone=isDone
         }
-
-        addNote=():void=>{ 
-        }
+        
+        // addNote():number{              
+        //      return this.id
+        // }
     }
-    const taskDone=(key: number): void=>{
+    // let tasking = new Task ("good task",10,false)
+    // console.log(tasking)
+    // console.log(tasking.addNote())
 
-        for (let i = 0 ; i < arr.length ; i++) {
-        if (arr[i] != null) 
-            if (arr[i]["id"] == key) {
-            arr[i].isDone=true
-            break
-            }
-        }
+    var taskDone=(key: number): void=>{
+        arr.find((obj):boolean=>obj.id==key).isDone=true
         localStorage.removeItem("tasks")
         localStorage.setItem("tasks", JSON.stringify(arr))
-        location.reload()
+        loadTasks()
     }
-window.onload=()=>{
-    arr=JSON.parse(localStorage.getItem('tasks'));
-    if (arr!=null) {
-        for (let note of arr) 
-            if(note != null){
+
+    const loadTasks=():void=>{
+        
+        todo.innerHTML=""
+        arr=JSON.parse(localStorage.getItem('tasks')) || [];
+            for (let note of arr){ 
+                // console.log(note)
+                // console.log(note.addNote())
                     todo.innerHTML+=`<div class= "todo-row" >
                     <div id="${note.id}" class="todo-item">${note.txt}</div>
                     <button class="todo-ok" onclick="taskDone(${note.id})">V</button>
-                    </div>`
-                if(note.isDone==true)
-                    todo.children[note.id].children[0].classList.add("done")
-                else
-                    todo.children[note.id].children[0].classList.remove("done")
+                    </div>`                    
+                    if(note.isDone)
+                        todo.children[note.id].children[0].classList.add("done")
+                    else
+                        todo.children[note.id].children[0].classList.remove("done")  
+                
             }
     }
-}
+    loadTasks()
 
     btn.addEventListener("click",(e)=>{
         e.preventDefault()
-        if(arr==null){
-            counter=0
-            arr=[]
-        }
-        else
-            counter=arr.length
+        counter=arr.length
         let task = new Task (text.value,counter,false)
         arr.push(task);
         localStorage.setItem('tasks',JSON.stringify(arr))
-        location.reload()
+        loadTasks()
     })  
 
     delAll.addEventListener("click",(e)=>{
@@ -73,23 +71,20 @@ window.onload=()=>{
             arr=[]
             localStorage.removeItem("tasks")
             localStorage.setItem("tasks", JSON.stringify(arr))
-            location.reload()
+            loadTasks()
         }
     })  
 
     del.addEventListener("click",(e)=>{
         let doDelete:boolean=confirm("Delete completed tasks?")
         if(doDelete){
-            for (let i = 0 ; i < arr.length ; i++) {
-                if (arr[i] != null) 
-                    if (arr[i]["isDone"] == true) {
-                        arr.splice(i,1)
-                    }
-            }
+            for (let i = arr.length-1 ; i >= 0 ; i--)
+                if (arr[i]["isDone"]) arr.splice(i,1)
+            arr.map((obj,j)=>obj.id=j)    
             localStorage.removeItem("tasks")
             localStorage.setItem("tasks", JSON.stringify(arr))
-            location.reload()
+            loadTasks()
         }
     })  
-    
-export{}
+
+}
